@@ -11,24 +11,28 @@ class ButtonActions extends React.Component {
       if (event.isComposing || event.keyCode === 229) {
         return;
       }
+      if (event.keyCode === 82 && this.props.data.gameOver) {
+        this.props.actions.restart();
+      }
+      if (this.props.data.gameOver) return;
       if (event.keyCode === 38) {
         console.log("UP");
-        if (!this.props.actions.direction.includes("y"))
+        if (!this.props.data.direction.includes("y"))
           this.props.actions.up("-y");
       }
       if (event.keyCode === 39) {
         console.log("RIGHT");
-        if (!this.props.actions.direction.includes("x"))
+        if (!this.props.data.direction.includes("x"))
           this.props.actions.right("+x");
       }
       if (event.keyCode === 40) {
         console.log("DOWN");
-        if (!this.props.actions.direction.includes("y"))
+        if (!this.props.data.direction.includes("y"))
           this.props.actions.down("+y");
       }
       if (event.keyCode === 37) {
         console.log("LEFT");
-        if (!this.props.actions.direction.includes("x"))
+        if (!this.props.data.direction.includes("x"))
           this.props.actions.left("-x");
       }
       if (event.keyCode === 32) {
@@ -44,7 +48,9 @@ class ButtonActions extends React.Component {
   }
   render() {
     let game;
-    if (this.state.pause) {
+    if (this.props.data.gameOver) {
+      game = "Game Over";
+    } else if (this.state.pause) {
       game = "Yes Paused";
     } else {
       game = "Running";

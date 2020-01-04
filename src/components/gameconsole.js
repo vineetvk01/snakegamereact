@@ -9,7 +9,10 @@ class GameConsole extends React.Component {
     this.state = {
       snake: ["1:1", "2:1", "3:1", "4:1", "5:1", "6:1", "7:1"],
       direction: "+x",
-      internvalId: null
+      points: 0,
+      internvalId: null,
+      over: false,
+      appleCordinate: "5:5"
     };
     this.moveSnakeRight = this.moveSnakeRight.bind(this);
     this.moveSnakeLeft = this.moveSnakeLeft.bind(this);
@@ -22,11 +25,22 @@ class GameConsole extends React.Component {
     this.changeDirection = this.changeDirection.bind(this);
     this.havingDuplicates = this.havingDuplicates.bind(this);
     this.checkColision = this.checkColision.bind(this);
+    this.getAppleCordinate = this.getAppleCordinate.bind(this);
+    this.restartGame = this.restartGame.bind(this);
     this.snakeInterval = null;
   }
 
-  havingDuplicates(arr) {
+  getAppleCordinate() {
+    return (
+      Math.floor(Math.random() * 10) +
+      1 +
+      ":" +
+      Math.floor(Math.random() * 10 + 1)
+    );
+  }
+  havingDuplicates(arr, nextX, nextY) {
     let sorted_arr = arr.slice().sort();
+    sorted_arr.push(nextX + ":" + nextY);
     let results = [];
     for (let i = 0; i < sorted_arr.length - 1; i++) {
       if (sorted_arr[i + 1] == sorted_arr[i]) {
@@ -36,23 +50,46 @@ class GameConsole extends React.Component {
     return results.length > 0 ? true : false;
   }
 
-  checkColision() {
+  checkColision(nextX, nextY) {
     let snakeCordinates = this.state.snake;
-    if (this.havingDuplicates(snakeCordinates)) this.stopSnake();
-    let headOfSnake = this.getHeadOfSnake(snakeCordinates);
-    let cords = headOfSnake.split(":");
-    if (parseInt(cords[0]) < 1 || parseInt(cords[1]) < 1) this.stopSnake();
-    if (parseInt(cords[0]) > 10 || parseInt(cords[1]) > 10) this.stopSnake();
+    if (this.havingDuplicates(snakeCordinates, nextX, nextY)) {
+      this.stopSnake("over");
+      return true;
+    }
+    if (
+      parseInt(nextX) < 1 ||
+      parseInt(nextY) < 1 ||
+      parseInt(nextX) > 10 ||
+      parseInt(nextY) > 10
+    ) {
+      this.stopSnake("over");
+      return true;
+    }
+    return false;
   }
 
+  restartGame() {
+    this.setState(prevstate => {
+      return {
+        snake: ["1:1", "2:1"],
+        direction: "+x",
+        points: 0,
+        over: false
+      };
+    });
+    this.startSnake();
+  }
   startSnake() {
-    this.snakeInterval = setInterval(this.moveSnake, 300);
+    this.snakeInterval = setInterval(this.moveSnake, 200);
     console.log(this.snakeInterval);
   }
 
   changeDirection(dir) {
+    console.log(
+      "Changing Direction: " + dir + " | Current Snake : " + this.state.snake
+    );
     this.setState(prevstate => {
-      return { direction: dir };
+      return { ...prevstate, direction: dir };
     });
   }
 
@@ -83,63 +120,115 @@ class GameConsole extends React.Component {
   moveSnakeRight() {
     console.log("Moving : +x ");
     let currentSnake = this.state.snake;
-    currentSnake.splice(0, 1);
     let headOfSnake = this.getHeadOfSnake(currentSnake);
     let coordinateOfHead = headOfSnake.split(":");
     let nextX = parseInt(coordinateOfHead[0]) + 1;
     let nextY = coordinateOfHead[1];
-    currentSnake.push(nextX + ":" + nextY);
-    this.setState(prevstate => {
-      return { snake: currentSnake, direction: "+x" };
-    });
+    if (!this.checkColision(nextX, nextY)) {
+      console.log("Inserting : " + nextX + ":" + nextY);
+      let appleCordinate = this.state.appleCordinate;
+      if (nextX + ":" + nextY != appleCordinate) {
+        currentSnake.splice(0, 1);
+      } else {
+        appleCordinate = this.getAppleCordinate();
+      }
+      currentSnake.push(nextX + ":" + nextY);
+      this.setState(prevstate => {
+        return { snake: currentSnake, direction: "+x", appleCordinate };
+      });
+    } else {
+      this.setState(prevstate => {
+        return { over: true };
+      });
+    }
   }
 
   moveSnakeLeft() {
     console.log("Moving : -x ");
     let currentSnake = this.state.snake;
-    currentSnake.splice(0, 1);
     let headOfSnake = this.getHeadOfSnake(currentSnake);
     let coordinateOfHead = headOfSnake.split(":");
     let nextX = parseInt(coordinateOfHead[0]) - 1;
     let nextY = coordinateOfHead[1];
-    currentSnake.push(nextX + ":" + nextY);
-    this.setState(prevstate => {
-      return { snake: currentSnake, direction: "-x" };
-    });
+    if (!this.checkColision(nextX, nextY)) {
+      console.log("Inserting : " + nextX + ":" + nextY);
+      let appleCordinate = this.state.appleCordinate;
+      if (nextX + ":" + nextY != appleCordinate) {
+        currentSnake.splice(0, 1);
+      } else {
+        appleCordinate = this.getAppleCordinate();
+      }
+      currentSnake.push(nextX + ":" + nextY);
+      this.setState(prevstate => {
+        return { snake: currentSnake, direction: "-x", appleCordinate };
+      });
+    } else {
+      this.setState(prevstate => {
+        return { over: true };
+      });
+    }
   }
   moveSnakeUp() {
     console.log("Moving : -y ");
     let currentSnake = this.state.snake;
-    currentSnake.splice(0, 1);
     let headOfSnake = this.getHeadOfSnake(currentSnake);
     let coordinateOfHead = headOfSnake.split(":");
     let nextX = coordinateOfHead[0];
     let nextY = parseInt(coordinateOfHead[1]) - 1;
-    currentSnake.push(nextX + ":" + nextY);
-    this.setState(prevstate => {
-      return { snake: currentSnake, direction: "-y" };
-    });
+    if (!this.checkColision(nextX, nextY)) {
+      console.log("Inserting : " + nextX + ":" + nextY);
+      let appleCordinate = this.state.appleCordinate;
+      if (nextX + ":" + nextY != appleCordinate) {
+        currentSnake.splice(0, 1);
+      } else {
+        appleCordinate = this.getAppleCordinate();
+      }
+      currentSnake.push(nextX + ":" + nextY);
+      this.setState(prevstate => {
+        return { snake: currentSnake, direction: "-y", appleCordinate };
+      });
+    } else {
+      this.setState(prevstate => {
+        return { over: true };
+      });
+    }
   }
   moveSnakeDown() {
-    console.log("Moving : +y ");
+    console.log("Moving : +y " + this.state.snake);
     let currentSnake = this.state.snake;
-    currentSnake.splice(0, 1);
     let headOfSnake = this.getHeadOfSnake(currentSnake);
     let coordinateOfHead = headOfSnake.split(":");
     let nextX = coordinateOfHead[0];
     let nextY = parseInt(coordinateOfHead[1]) + 1;
-    currentSnake.push(nextX + ":" + nextY);
-    this.setState(prevstate => {
-      return { snake: currentSnake, direction: "+y" };
-    });
+    if (!this.checkColision(nextX, nextY)) {
+      console.log("Inserting : " + nextX + ":" + nextY);
+      let appleCordinate = this.state.appleCordinate;
+      if (nextX + ":" + nextY != appleCordinate) {
+        currentSnake.splice(0, 1);
+      } else {
+        appleCordinate = this.getAppleCordinate();
+      }
+      currentSnake.push(nextX + ":" + nextY);
+      this.setState(prevstate => {
+        return { snake: currentSnake, direction: "+y", appleCordinate };
+      });
+    } else {
+      this.setState(prevstate => {
+        return { over: true };
+      });
+    }
   }
 
   stopSnake() {
-    console.log("Stopping Snake : " + this.snakeInterval);
+    console.log("Stopping Snake : " + this.snakeInterval._id);
     clearInterval(this.snakeInterval._id);
   }
 
   componentDidMount() {
+    let appleCordinate = this.getAppleCordinate();
+    this.setState(prevstate => {
+      return { ...prevstate, appleCordinate: appleCordinate };
+    });
     this.startSnake();
   }
   render() {
@@ -151,13 +240,25 @@ class GameConsole extends React.Component {
       right: this.changeDirection,
       pause: this.stopSnake,
       start: this.startSnake,
-      direction: this.state.direction
+      restart: this.restartGame
     };
-    this.checkColision(this.state.snake);
+    const data = {
+      direction: this.state.direction,
+      gameOver: this.state.over
+    };
     for (var y = 1; y <= 10; y++) {
       for (var x = 1; x <= 10; x++) {
         let key = x + ":" + y;
-        if (this.state.snake.includes(key)) {
+        if (key === this.state.appleCordinate) {
+          boxes.push(
+            <div key={key} className="box">
+              <img
+                src={process.env.PUBLIC_URL + "/images/apple.png"}
+                width="50px"
+              />
+            </div>
+          );
+        } else if (this.state.snake.includes(key)) {
           if (key == this.getHeadOfSnake(this.state.snake)) {
             boxes.push(
               <div key={key} className="box">
@@ -175,7 +276,7 @@ class GameConsole extends React.Component {
           }
         } else {
           boxes.push(
-            <div key={key} className="box" style={{ color: "white" }}>
+            <div key={key} className="box">
               {key}
             </div>
           );
@@ -187,7 +288,7 @@ class GameConsole extends React.Component {
         <div id="game">{boxes}</div>
         <div id="control">
           <button onClick={this.stopSnake}>Stop</button>
-          <ButtonActions actions={snakeActions} />
+          <ButtonActions actions={snakeActions} data={data} />
         </div>
       </div>
     );
