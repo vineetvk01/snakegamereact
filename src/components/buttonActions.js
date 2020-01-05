@@ -49,11 +49,12 @@ class ButtonActions extends React.Component {
   render() {
     let game;
     if (this.props.data.gameOver) {
-      game = "Game Over";
+      game =
+        "Game Over | Press R to Restart | Points: " + this.props.data.points;
     } else if (this.state.pause) {
       game = "Yes Paused";
     } else {
-      game = "Running";
+      game = "Running | Points: " + this.props.data.points;
     }
     return (
       <div>

@@ -1,5 +1,5 @@
 #gameConsole {
-  background-color: #000;
+  background-color: #ffa774;
   border: #000 solid 1px;
   height: 502px;
   width: 502px;
@@ -14,7 +14,7 @@
 }
 
 .snake {
-  border: #b6b428 solid 1px;
+  border: #013220 solid 1px;
   background-color: #013220;
   height: 48px;
   border-radius: 15px;
