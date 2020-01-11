@@ -17,23 +17,27 @@ class ButtonActions extends React.Component {
       if (this.props.data.gameOver) return;
       if (event.keyCode === 38) {
         console.log("UP");
-        if (!this.props.data.direction.includes("y"))
+        if (!this.props.data.direction.includes("y")) {
           this.props.actions.up("-y");
+        }
       }
       if (event.keyCode === 39) {
         console.log("RIGHT");
-        if (!this.props.data.direction.includes("x"))
+        if (!this.props.data.direction.includes("x")) {
           this.props.actions.right("+x");
+        }
       }
       if (event.keyCode === 40) {
         console.log("DOWN");
-        if (!this.props.data.direction.includes("y"))
+        if (!this.props.data.direction.includes("y")) {
           this.props.actions.down("+y");
+        }
       }
       if (event.keyCode === 37) {
         console.log("LEFT");
-        if (!this.props.data.direction.includes("x"))
+        if (!this.props.data.direction.includes("x")) {
           this.props.actions.left("-x");
+        }
       }
       if (event.keyCode === 32) {
         console.log("Pause");
@@ -49,16 +53,15 @@ class ButtonActions extends React.Component {
   render() {
     let game;
     if (this.props.data.gameOver) {
-      game =
-        "Game Over | Press R to Restart | Points: " + this.props.data.points;
+      game = "GAME OVER | Press R to Restart ";
     } else if (this.state.pause) {
-      game = "Yes Paused";
+      game = "PAUSED";
     } else {
-      game = "Running | Points: " + this.props.data.points;
+      game = "RUNNING ";
     }
     return (
       <div>
-        <p>[Hit Arrows to play and SpaceBar to Pause/play] : {game}</p>
+        <p style={{ fontSize: "20px", fontWeight: "900" }}>{game}</p>
       </div>
     );
   }

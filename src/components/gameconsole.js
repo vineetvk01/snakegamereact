@@ -7,7 +7,7 @@ class GameConsole extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      snake: ["1:1", "2:1", "3:1", "4:1", "5:1", "6:1", "7:1"],
+      snake: ["1:1", "2:1", "3:1", "4:1"],
       direction: "+x",
       points: 0,
       internvalId: null,
@@ -29,10 +29,10 @@ class GameConsole extends React.Component {
 
   getAppleCordinate() {
     let appleNewCord =
-      Math.floor(Math.random() * 10) +
+      Math.floor(Math.random() * 20) +
       1 +
       ":" +
-      Math.floor(Math.random() * 10 + 1);
+      Math.floor(Math.random() * 20 + 1);
     if (this.state.snake.includes(appleNewCord))
       return this.getAppleCordinate();
     return appleNewCord;
@@ -42,7 +42,7 @@ class GameConsole extends React.Component {
     sorted_arr.push(nextX + ":" + nextY);
     let results = [];
     for (let i = 0; i < sorted_arr.length - 1; i++) {
-      if (sorted_arr[i + 1] == sorted_arr[i]) {
+      if (sorted_arr[i + 1] === sorted_arr[i]) {
         results.push(sorted_arr[i]);
       }
     }
@@ -58,8 +58,8 @@ class GameConsole extends React.Component {
     if (
       parseInt(nextX) < 1 ||
       parseInt(nextY) < 1 ||
-      parseInt(nextX) > 10 ||
-      parseInt(nextY) > 10
+      parseInt(nextX) > 20 ||
+      parseInt(nextY) > 20
     ) {
       this.stopSnake("over");
       return true;
@@ -70,7 +70,7 @@ class GameConsole extends React.Component {
   restartGame() {
     this.setState(prevstate => {
       return {
-        snake: ["1:1", "2:1"],
+        snake: ["1:1", "2:1", "3:1", "4:1"],
         direction: "+x",
         points: 0,
         over: false
@@ -79,14 +79,11 @@ class GameConsole extends React.Component {
     this.startSnake();
   }
   startSnake() {
-    this.snakeInterval = setInterval(this.moveSnake, 200);
-    console.log(this.snakeInterval);
+    console.log("Starting?");
+    this.snakeInterval = setInterval(this.moveSnake, 140);
   }
 
   changeDirection(dir) {
-    console.log(
-      "Changing Direction: " + dir + " | Current Snake : " + this.state.snake
-    );
     this.setState(prevstate => {
       return { ...prevstate, direction: dir };
     });
@@ -136,12 +133,14 @@ class GameConsole extends React.Component {
       case "-y":
         nextY--;
         break;
+      default:
+        break;
     }
     if (!this.checkColision(nextX, nextY)) {
       console.log("Inserting : " + nextX + ":" + nextY);
       let appleCordinate = this.state.appleCordinate;
       let points = this.state.points;
-      if (nextX + ":" + nextY != appleCordinate) {
+      if (nextX + ":" + nextY !== appleCordinate) {
         currentSnake.splice(0, 1);
       } else {
         points = parseInt(points) + 5;
@@ -170,6 +169,17 @@ class GameConsole extends React.Component {
     });
     this.startSnake();
   }
+
+  componentWillUnmount() {
+    this.stopSnake();
+  }
+
+  goHome = event => {
+    let user = this.props.lastScore.by;
+    let score = this.state.points;
+    this.props.onClick(user, score);
+  };
+
   render() {
     const boxes = [];
     const snakeActions = {
@@ -186,20 +196,21 @@ class GameConsole extends React.Component {
       gameOver: this.state.over,
       points: this.state.points
     };
-    for (var y = 1; y <= 10; y++) {
-      for (var x = 1; x <= 10; x++) {
+    for (var y = 1; y <= 20; y++) {
+      for (var x = 1; x <= 20; x++) {
         let key = x + ":" + y;
         if (key === this.state.appleCordinate) {
           boxes.push(
             <div key={key} className="box">
               <img
                 src={process.env.PUBLIC_URL + "/images/apple.png"}
-                width="50px"
+                alt="Apple Pic"
+                className="apple"
               />
             </div>
           );
         } else if (this.state.snake.includes(key)) {
-          if (key == this.getHeadOfSnake(this.state.snake)) {
+          if (key === this.getHeadOfSnake(this.state.snake)) {
             boxes.push(
               <div key={key} className="box">
                 <div
@@ -213,7 +224,8 @@ class GameConsole extends React.Component {
                 >
                   <img
                     src={process.env.PUBLIC_URL + "/images/snakeface.png"}
-                    width="60px"
+                    width="26px"
+                    alt="Snake Mouth"
                   />
                 </div>
               </div>
@@ -231,13 +243,17 @@ class GameConsole extends React.Component {
       }
     }
     return (
-      <div id="gameConsole">
-        <div id="game">{boxes}</div>
-        <div id="control">
-          <button onClick={this.stopSnake}>Stop</button>
-          <ButtonActions actions={snakeActions} data={data} />
+      <React.Fragment>
+        <div id="gameConsole">
+          <div className="game">{boxes}</div>
         </div>
-      </div>
+        <div className="board">
+          <ButtonActions actions={snakeActions} data={data} />
+          <h2>PLAYER : {this.props.lastScore.by} </h2>
+          <h2>POINTS : {this.state.points}</h2>
+          <button onClick={this.goHome}>Home</button>
+        </div>
+      </React.Fragment>
     );
   }
 }

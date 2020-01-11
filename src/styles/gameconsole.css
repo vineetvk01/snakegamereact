@@ -1,21 +1,74 @@
 #gameConsole {
-  background-color: #ffa774;
   border: #000 solid 1px;
   height: 502px;
   width: 502px;
+  float: left;
+  margin: 10px 40px;
+}
+
+.game {
+}
+
+.board {
+  float: left;
+  margin: 50px;
+  text-align: left;
+}
+
+.board > button {
+  padding: 10px 20px;
+  font-size: 1.5em;
+  background-color: aliceblue;
 }
 
 .box {
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
   border: #fff solid 0px;
   margin: 0;
   float: left;
+  background-color: #90ee90;
 }
 
 .snake {
   border: #013220 solid 1px;
   background-color: #013220;
-  height: 48px;
-  border-radius: 15px;
+  height: 23px;
+  border-radius: 5px;
+}
+
+.apple {
+  width: 20px;
+  -webkit-animation-name: apple; /* Safari 4.0 - 8.0 */
+  -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
+  -webkit-animation-iteration-count: infinite;
+  animation-name: apple;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes apple {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Standard syntax */
+@keyframes apple {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
 }
